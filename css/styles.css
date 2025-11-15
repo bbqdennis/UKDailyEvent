@@ -1,0 +1,146 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f5f6fa;
+  --card-bg: #ffffffee;
+  --text: #1c1c1c;
+  --muted: #5f6368;
+  --accent: #7b5af1;
+  --accent-light: #ede7ff;
+  --border: #e0e0e0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(180deg, #eef2ff 0%, #fefefe 50%, #f4f7fb 100%);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+header {
+  padding: 3rem 1.5rem 2rem;
+  text-align: center;
+}
+
+header h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin-bottom: 0.5rem;
+  color: #1e1e2d;
+}
+
+header p {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+}
+
+.intro {
+  background: #ffffffee;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 25px rgba(112, 144, 176, 0.12);
+}
+
+.intro h2 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  color: #1f1f3b;
+}
+
+.intro p {
+  margin: 0 0 0.75rem;
+  color: #3b3b4f;
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.75rem;
+}
+
+.event-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 20px 40px rgba(112, 144, 176, 0.18);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 30px 60px rgba(97, 118, 176, 0.2);
+}
+
+.event-name {
+  font-size: 1.1rem;
+  margin: 0;
+  color: #1f1f3b;
+}
+
+.event-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.event-description {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #2f2f3c;
+  flex: 1;
+}
+
+.price-pill {
+  align-self: flex-start;
+  padding: 0.3rem 0.65rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  background: var(--accent-light);
+  color: var(--accent);
+  border: 1px solid #d8ccff;
+}
+
+.event-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.event-links a {
+  font-size: 0.9rem;
+  color: #1a73e8;
+  text-decoration: none;
+}
+
+.event-links a:hover {
+  text-decoration: underline;
+}
+
+.status {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.status.error {
+  color: #b00020;
+}
