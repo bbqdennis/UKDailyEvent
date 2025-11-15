@@ -5,14 +5,29 @@ const DATA_URLS = [
 const eventsGrid = document.getElementById("eventsGrid");
 const statusBox = document.getElementById("status");
 
+const getDisplayValue = (value) => {
+  if (value == null) return "";
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed || trimmed.toUpperCase() === "N/A") return "";
+    return trimmed;
+  }
+  return value;
+};
+
 const createMetaRow = (label, value) => {
-  if (!value) return "";
-  return `<div><strong>${label}：</strong>${value}</div>`;
+  const content = getDisplayValue(value);
+  if (!content) return "";
+  return `<div><strong>${label}：</strong>${content}</div>`;
 };
 
 const renderLinks = (linkString) => {
   if (!linkString) return "";
-  const entries = linkString.split(/\s*,\s*/).filter(Boolean);
+  const entries = linkString
+    .split(/\s*,\s*/)
+    .map((entry) => getDisplayValue(entry))
+    .filter(Boolean);
+  if (!entries.length) return "";
   return entries
     .map((entry) => {
       const urlMatch = entry.match(/https?:\/\/[^\s)]+/);
@@ -23,28 +38,29 @@ const renderLinks = (linkString) => {
 };
 
 const createLocationRow = (location) => {
-  if (!location) return "";
-  const encodedLocation = encodeURIComponent(location);
+  const displayLocation = getDisplayValue(location);
+  if (!displayLocation) return "";
+  const encodedLocation = encodeURIComponent(displayLocation);
   const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodedLocation}`;
-  return `<div><strong>地點：</strong><a class="location-link" href="${mapUrl}" target="_blank" rel="noopener noreferrer">${location}</a></div>`;
+  return `<div><strong>地點：</strong><a class="location-link" href="${mapUrl}" target="_blank" rel="noopener noreferrer">${displayLocation}</a></div>`;
 };
 
 const createCard = (event) => {
   const card = document.createElement("article");
   card.className = "event-card";
+  const descriptionText = getDisplayValue(event.event_description);
+  const priceText = getDisplayValue(event.event_price);
+  const linksHtml =
+    event.event_link && renderLinks(event.event_link);
   card.innerHTML = `
         <h2 class="event-name">${event.event_name ?? "未命名活動"}</h2>
         <div class="event-meta">
           ${createMetaRow("時間", event.event_time)}
           ${createLocationRow(event.event_location)}
         </div>
-        <p class="event-description">${event.event_description ?? "暫無描述"}</p>
-        ${event.event_price ? `<span class="price-pill">${event.event_price}</span>` : ""}
-        ${
-          event.event_link
-            ? `<div class="event-links" aria-label="活動相關連結">${renderLinks(event.event_link)}</div>`
-            : ""
-        }
+        ${descriptionText ? `<p class="event-description">${descriptionText}</p>` : ""}
+        ${priceText ? `<span class="price-pill">${priceText}</span>` : ""}
+        ${linksHtml ? `<div class="event-links" aria-label="活動相關連結">${linksHtml}</div>` : ""}
       `;
   return card;
 };

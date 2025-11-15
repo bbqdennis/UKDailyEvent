@@ -44,6 +44,41 @@ main {
   padding: 0 1.5rem 4rem;
 }
 
+.contact {
+  margin-top: 3rem;
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  box-shadow: 0 15px 35px rgba(112, 144, 176, 0.12);
+  text-align: center;
+}
+
+.contact h2 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #1f1f3b;
+}
+
+.contact p {
+  margin: 0 0 1rem;
+  color: #3b3b4f;
+}
+
+.contact-link {
+  display: inline-block;
+  padding: 0.6rem 1.4rem;
+  border-radius: 12px;
+  background: var(--accent);
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.contact-link:hover {
+  opacity: 0.9;
+}
+
 .events-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
