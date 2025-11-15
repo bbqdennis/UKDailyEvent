@@ -22,6 +22,13 @@ const renderLinks = (linkString) => {
     .join("");
 };
 
+const createLocationRow = (location) => {
+  if (!location) return "";
+  const encodedLocation = encodeURIComponent(location);
+  const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodedLocation}`;
+  return `<div><strong>地點：</strong><a class="location-link" href="${mapUrl}" target="_blank" rel="noopener noreferrer">${location}</a></div>`;
+};
+
 const createCard = (event) => {
   const card = document.createElement("article");
   card.className = "event-card";
@@ -29,7 +36,7 @@ const createCard = (event) => {
         <h2 class="event-name">${event.event_name ?? "未命名活動"}</h2>
         <div class="event-meta">
           ${createMetaRow("時間", event.event_time)}
-          ${createMetaRow("地點", event.event_location)}
+          ${createLocationRow(event.event_location)}
         </div>
         <p class="event-description">${event.event_description ?? "暫無描述"}</p>
         ${event.event_price ? `<span class="price-pill">${event.event_price}</span>` : ""}

@@ -9,8 +9,8 @@ https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester.json
 ## 功能簡介
 
 - `index.html` 會串接遠端 JSON，將活動資訊以卡片方式顯示並處理載入或錯誤狀態訊息。
-- `css/styles.css` 包含版面與配色設定，提供功能簡介卡片及活動卡片的樣式。
-- `js/main.js` 擔負資料載入、轉換與 DOM 產生，並使用 JSON 原始連結文字作為顯示內容。
+- `css/styles.css` 包含版面與配色設定，並定義活動卡片、可點擊地點與單行顯示的活動連結樣式。
+- `js/main.js` 擔負資料載入、轉換與 DOM 產生，使用 JSON 原始連結文字並讓地點欄位可跳轉到 Google Maps 搜尋。
 
 ## 開發指引
 
