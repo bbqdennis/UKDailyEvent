@@ -29,18 +29,6 @@ const parseLinks = (linkString) => {
     .filter(Boolean);
 };
 
-const renderLinks = (linkString) => {
-  const entries = parseLinks(linkString);
-  if (!entries.length) return "";
-  return entries
-    .map((entry) => {
-      const urlMatch = entry.match(/https?:\/\/[^\s)]+/);
-      const href = urlMatch ? urlMatch[0] : entry;
-      return `<a href="${href}" target="_blank" rel="noopener noreferrer">${entry}</a>`;
-    })
-    .join("");
-};
-
 const createLocationRow = (location) => {
   const displayLocation = getDisplayValue(location);
   if (!displayLocation) return "";
@@ -93,21 +81,40 @@ const copyToClipboard = async (text) => {
   document.body.removeChild(textarea);
 };
 
-const handleCopy = async (event, button) => {
+const handleCopy = async (event, button, tooltip, wrapper) => {
   const text = buildCopyText(event);
   const defaultLabel = button.dataset.defaultLabel || "複製活動內容";
+  const defaultTooltip = tooltip.dataset.defaultText || "點擊複製";
   const setState = (stateClass, label) => {
     button.classList.remove("copied", "error");
     if (stateClass) button.classList.add(stateClass);
     button.setAttribute("aria-label", label);
   };
 
+  const showTooltip = (message, variant) => {
+    tooltip.textContent = message;
+    tooltip.classList.remove("success", "error");
+    if (variant) tooltip.classList.add(variant);
+    wrapper.classList.add("tooltip-visible");
+    if (wrapper._tooltipTimeout) {
+      clearTimeout(wrapper._tooltipTimeout);
+    }
+    wrapper._tooltipTimeout = setTimeout(() => {
+      tooltip.textContent = defaultTooltip;
+      tooltip.classList.remove("success", "error");
+      wrapper.classList.remove("tooltip-visible");
+      wrapper._tooltipTimeout = undefined;
+    }, 2000);
+  };
+
   try {
     await copyToClipboard(text);
     setState("copied", "已複製");
+    showTooltip("已複製到剪貼簿", "success");
   } catch (error) {
     console.error("Copy failed", error);
     setState("error", "複製失敗");
+    showTooltip("複製失敗", "error");
   } finally {
     setTimeout(() => {
       setState("", defaultLabel);
@@ -115,12 +122,72 @@ const handleCopy = async (event, button) => {
   }
 };
 
+const showLinkCopyMessage = (linkEl, message, variant = "success") => {
+  if (linkEl._copyMessage) {
+    clearTimeout(linkEl._copyMessage.timeout);
+    linkEl._copyMessage.element.remove();
+  }
+  const span = document.createElement("span");
+  span.className = "link-copy-message";
+  if (variant === "error") {
+    span.style.color = "#d62828";
+  }
+  span.textContent = message;
+  linkEl.after(span);
+  const timeout = setTimeout(() => {
+    span.remove();
+    linkEl._copyMessage = undefined;
+  }, 2000);
+  linkEl._copyMessage = { element: span, timeout };
+};
+
+const handleLinkCopy = async (text, linkEl) => {
+  try {
+    await copyToClipboard(text);
+    showLinkCopyMessage(linkEl, "已複製到剪貼簿");
+  } catch (error) {
+    console.error("Copy link failed", error);
+    showLinkCopyMessage(linkEl, "複製失敗", "error");
+  }
+};
+
+const createLinksSection = (linkString) => {
+  const entries = parseLinks(linkString);
+  if (!entries.length) return null;
+  const container = document.createElement("div");
+  container.className = "event-links";
+  container.setAttribute("aria-label", "活動相關連結");
+
+  entries.forEach((entry) => {
+    const linkEl = document.createElement("a");
+    linkEl.textContent = entry;
+    const hasProtocol = /^https?:\/\//i.test(entry);
+    if (hasProtocol) {
+      linkEl.href = entry;
+      linkEl.target = "_blank";
+      linkEl.rel = "noopener noreferrer";
+    } else {
+      linkEl.href = "#";
+      linkEl.classList.add("copy-only-link");
+      linkEl.setAttribute("role", "button");
+      linkEl.setAttribute("aria-label", "點擊複製活動連結");
+      linkEl.addEventListener("click", (event) => {
+        event.preventDefault();
+        handleLinkCopy(entry, linkEl);
+      });
+    }
+    container.appendChild(linkEl);
+  });
+
+  return container;
+};
+
 const createCard = (event) => {
   const card = document.createElement("article");
   card.className = "event-card";
   const descriptionText = getDisplayValue(event.event_description);
   const priceText = getDisplayValue(event.event_price);
-  const linksHtml = renderLinks(event.event_link);
+  const linksSection = createLinksSection(event.event_link);
   const header = document.createElement("div");
   header.className = "card-header";
 
@@ -128,6 +195,9 @@ const createCard = (event) => {
   titleElement.className = "event-name";
   titleElement.textContent = event.event_name ?? "未命名活動";
   header.appendChild(titleElement);
+
+  const copyWrapper = document.createElement("div");
+  copyWrapper.className = "copy-wrapper";
 
   const copyButton = document.createElement("button");
   copyButton.type = "button";
@@ -140,8 +210,17 @@ const createCard = (event) => {
       <path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v16h13a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm0 18H8V7h11v16z"/>
     </svg>
   `;
-  copyButton.addEventListener("click", () => handleCopy(event, copyButton));
-  header.appendChild(copyButton);
+  const tooltip = document.createElement("span");
+  tooltip.className = "copy-tooltip";
+  const tooltipText = "點擊複製";
+  tooltip.dataset.defaultText = tooltipText;
+  tooltip.textContent = tooltipText;
+
+  copyButton.addEventListener("click", () => handleCopy(event, copyButton, tooltip, copyWrapper));
+
+  copyWrapper.appendChild(copyButton);
+  copyWrapper.appendChild(tooltip);
+  header.appendChild(copyWrapper);
   card.appendChild(header);
 
   card.insertAdjacentHTML(
@@ -153,9 +232,11 @@ const createCard = (event) => {
         </div>
         ${descriptionText ? `<p class="event-description">${descriptionText}</p>` : ""}
         ${priceText ? `<span class="price-pill">${priceText}</span>` : ""}
-        ${linksHtml ? `<div class="event-links" aria-label="活動相關連結">${linksHtml}</div>` : ""}
       `
   );
+  if (linksSection) {
+    card.appendChild(linksSection);
+  }
   return card;
 };
 

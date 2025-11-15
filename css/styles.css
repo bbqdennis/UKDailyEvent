@@ -126,6 +126,13 @@ main {
   justify-content: center;
 }
 
+.copy-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .copy-button:hover,
 .copy-button:focus-visible {
   opacity: 0.9;
@@ -145,6 +152,36 @@ main {
   height: 1rem;
   display: block;
   fill: currentColor;
+}
+
+.copy-tooltip {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  background: #1f1f3b;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 8px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.copy-wrapper:hover .copy-tooltip,
+.copy-wrapper.tooltip-visible .copy-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.copy-tooltip.success {
+  background: #2f9e44;
+}
+
+.copy-tooltip.error {
+  background: #d62828;
 }
 
 .event-name {
@@ -198,14 +235,23 @@ main {
   color: #1a73e8;
   text-decoration: none;
   display: block;
-  max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .event-links a:hover {
   text-decoration: underline;
+}
+
+.copy-only-link {
+  cursor: pointer;
+}
+
+.link-copy-message {
+  display: inline-block;
+  font-size: 0.75rem;
+  color: #2f9e44;
+  margin-left: 0.35rem;
 }
 
 .status {
