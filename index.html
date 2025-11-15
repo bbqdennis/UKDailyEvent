@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manchester Daily Events</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f5f6fa;
+      --card-bg: #ffffffee;
+      --text: #1c1c1c;
+      --muted: #5f6368;
+      --accent: #7b5af1;
+      --accent-light: #ede7ff;
+      --border: #e0e0e0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(180deg, #eef2ff 0%, #fefefe 50%, #f4f7fb 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 3rem 1.5rem 2rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin-bottom: 0.5rem;
+      color: #1e1e2d;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--muted);
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.75rem;
+    }
+
+    .event-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 20px 40px rgba(112, 144, 176, 0.18);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .event-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 30px 60px rgba(97, 118, 176, 0.2);
+    }
+
+    .event-name {
+      font-size: 1.1rem;
+      margin: 0;
+      color: #1f1f3b;
+    }
+
+    .event-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .event-description {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #2f2f3c;
+      flex: 1;
+    }
+
+    .price-pill {
+      align-self: flex-start;
+      padding: 0.3rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      background: var(--accent-light);
+      color: var(--accent);
+      border: 1px solid #d8ccff;
+    }
+
+    .event-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .event-links a {
+      font-size: 0.9rem;
+      color: #1a73e8;
+      text-decoration: none;
+    }
+
+    .event-links a:hover {
+      text-decoration: underline;
+    }
+
+    .status {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .status.error {
+      color: #b00020;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Manchester 每日活動</h1>
+    <p>即時載入最新活動資訊，規劃你的曼城精彩假期</p>
+  </header>
+
+  <main>
+    <section aria-live="polite">
+      <div id="eventsGrid" class="events-grid">
+        <div id="status" class="status">載入中...</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const DATA_URLS = [
+      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester.json",
+      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester.json"
+    ];
+    const eventsGrid = document.getElementById("eventsGrid");
+    const statusBox = document.getElementById("status");
+
+    const createMetaRow = (label, value) => {
+      if (!value) return "";
+      return `<div><strong>${label}：</strong>${value}</div>`;
+    };
+
+    const renderLinks = (linkString) => {
+      if (!linkString) return "";
+      const urls = linkString.split(/\s*,\s*/).filter(Boolean);
+      return urls
+        .map(
+          (url, index) =>
+            `<a href="${url}" target="_blank" rel="noopener noreferrer">連結 ${index + 1}</a>`
+        )
+        .join("");
+    };
+
+    const createCard = (event) => {
+      const card = document.createElement("article");
+      card.className = "event-card";
+      card.innerHTML = `
+        <h2 class="event-name">${event.event_name ?? "未命名活動"}</h2>
+        <div class="event-meta">
+          ${createMetaRow("時間", event.event_time)}
+          ${createMetaRow("地點", event.event_location)}
+        </div>
+        <p class="event-description">${event.event_description ?? "暫無描述"}</p>
+        ${event.event_price ? `<span class="price-pill">${event.event_price}</span>` : ""}
+        ${
+          event.event_link
+            ? `<div class="event-links" aria-label="活動相關連結">${renderLinks(event.event_link)}</div>`
+            : ""
+        }
+      `;
+      return card;
+    };
+
+    async function fetchWithFallback() {
+      let lastError;
+      for (const url of DATA_URLS) {
+        try {
+          const response = await fetch(url, { headers: { Accept: "application/json" }, cache: "no-cache" });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const text = await response.text();
+          return JSON.parse(text);
+        } catch (error) {
+          lastError = error;
+        }
+      }
+      throw lastError ?? new Error("未知錯誤");
+    }
+
+    async function loadEvents() {
+      try {
+        const events = await fetchWithFallback();
+
+        if (!Array.isArray(events) || events.length === 0) {
+          statusBox.textContent = "目前沒有活動資料。";
+          return;
+        }
+
+        eventsGrid.innerHTML = "";
+        events.forEach((event) => eventsGrid.appendChild(createCard(event)));
+      } catch (error) {
+        console.error("Failed to load events", error);
+        eventsGrid.innerHTML = `<div class="status error">無法載入活動：${error.message}</div>`;
+      } finally {
+        statusBox?.remove();
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadEvents);
+  </script>
+</body>
+</html>
