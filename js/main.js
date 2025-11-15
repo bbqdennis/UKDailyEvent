@@ -1,7 +1,14 @@
-const DATA_URLS = [
+const BASE_DATA_URLS = [
   "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester.json",
   "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester.json"
 ];
+
+const buildDataUrls = () => {
+  const today = new Date().toISOString().split("T")[0];
+  return BASE_DATA_URLS.map((url) => `${url}${url.includes("?") ? "&" : "?"}v=${today}`);
+};
+
+const DATA_URLS = buildDataUrls();
 const eventsGrid = document.getElementById("eventsGrid");
 const statusBox = document.getElementById("status");
 
