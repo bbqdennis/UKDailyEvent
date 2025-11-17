@@ -243,17 +243,6 @@ main {
   text-decoration: underline;
 }
 
-.copy-only-link {
-  cursor: pointer;
-}
-
-.link-copy-message {
-  display: inline-block;
-  font-size: 0.75rem;
-  color: #2f9e44;
-  margin-left: 0.35rem;
-}
-
 .status {
   text-align: center;
   padding: 2rem 1rem;

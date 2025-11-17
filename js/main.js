@@ -129,35 +129,6 @@ const handleCopy = async (event, button, tooltip, wrapper) => {
   }
 };
 
-const showLinkCopyMessage = (linkEl, message, variant = "success") => {
-  if (linkEl._copyMessage) {
-    clearTimeout(linkEl._copyMessage.timeout);
-    linkEl._copyMessage.element.remove();
-  }
-  const span = document.createElement("span");
-  span.className = "link-copy-message";
-  if (variant === "error") {
-    span.style.color = "#d62828";
-  }
-  span.textContent = message;
-  linkEl.after(span);
-  const timeout = setTimeout(() => {
-    span.remove();
-    linkEl._copyMessage = undefined;
-  }, 2000);
-  linkEl._copyMessage = { element: span, timeout };
-};
-
-const handleLinkCopy = async (text, linkEl) => {
-  try {
-    await copyToClipboard(text);
-    showLinkCopyMessage(linkEl, "已複製到剪貼簿");
-  } catch (error) {
-    console.error("Copy link failed", error);
-    showLinkCopyMessage(linkEl, "複製失敗", "error");
-  }
-};
-
 const createLinksSection = (linkString) => {
   const entries = parseLinks(linkString);
   if (!entries.length) return null;
@@ -174,14 +145,12 @@ const createLinksSection = (linkString) => {
       linkEl.target = "_blank";
       linkEl.rel = "noopener noreferrer";
     } else {
-      linkEl.href = "#";
-      linkEl.classList.add("copy-only-link");
-      linkEl.setAttribute("role", "button");
-      linkEl.setAttribute("aria-label", "點擊複製活動連結");
-      linkEl.addEventListener("click", (event) => {
-        event.preventDefault();
-        handleLinkCopy(entry, linkEl);
-      });
+      const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(entry)}`;
+      linkEl.href = searchUrl;
+      linkEl.target = "_blank";
+      linkEl.rel = "noopener noreferrer";
+      linkEl.title = "點擊打開Google搜尋";
+      linkEl.setAttribute("aria-label", `點擊打開Google搜尋：${entry}`);
     }
     container.appendChild(linkEl);
   });
