@@ -36,6 +36,11 @@ const parseLinks = (linkString) => {
     .filter(Boolean);
 };
 
+const ensureHttpProtocol = (url) => {
+  if (!url) return "";
+  return /^https?:\/\//i.test(url) ? url : `https://${url}`;
+};
+
 const createLocationRow = (location) => {
   const displayLocation = getDisplayValue(location);
   if (!displayLocation) return "";
@@ -163,6 +168,7 @@ const createCard = (event) => {
   card.className = "event-card";
   const descriptionText = getDisplayValue(event.event_description);
   const priceText = getDisplayValue(event.event_price);
+  const ticketLink = getDisplayValue(event.event_ticket_link);
   const linksSection = createLinksSection(event.event_link);
   const header = document.createElement("div");
   header.className = "card-header";
@@ -207,7 +213,15 @@ const createCard = (event) => {
           ${createLocationRow(event.event_location)}
         </div>
         ${descriptionText ? `<p class="event-description">${descriptionText}</p>` : ""}
-        ${priceText ? `<span class="price-pill">${priceText}</span>` : ""}
+        ${
+          priceText
+            ? ticketLink
+              ? `<a class="price-pill ticket-link" href="${ensureHttpProtocol(
+                  ticketLink
+                )}" target="_blank" rel="noopener noreferrer" data-tooltip="點擊購票" aria-label="點擊購票">${priceText}</a>`
+              : `<span class="price-pill">${priceText}</span>`
+            : ""
+        }
       `
   );
   if (linksSection) {

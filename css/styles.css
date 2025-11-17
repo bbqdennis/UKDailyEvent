@@ -215,6 +215,35 @@ main {
   border: 1px solid #d8ccff;
 }
 
+.ticket-link {
+  position: relative;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.ticket-link::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 0.3rem);
+  left: 50%;
+  transform: translate(-50%, 4px);
+  background: #1f1f3b;
+  color: white;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.ticket-link:hover::after,
+.ticket-link:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
 .event-links {
   display: flex;
   flex-wrap: wrap;
