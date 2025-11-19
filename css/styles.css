@@ -38,6 +38,33 @@ header p {
   color: var(--muted);
 }
 
+.region-selector {
+  margin-top: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 25px rgba(32, 33, 36, 0.08);
+}
+
+.region-selector label {
+  font-weight: 600;
+  color: #1f1f3b;
+}
+
+.region-selector select {
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent);
+  padding: 0.2rem 0;
+  outline: none;
+}
+
 main {
   max-width: 1100px;
   margin: 0 auto;

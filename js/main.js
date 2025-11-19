@@ -1,16 +1,76 @@
-const BASE_DATA_URLS = [
-  "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester.json",
-  "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester.json"
-];
-
-const buildDataUrls = () => {
-  const today = new Date().toISOString().split("T")[0];
-  return BASE_DATA_URLS.map((url) => `${url}${url.includes("?") ? "&" : "?"}v=${today}`);
+const REGION_CONFIG = {
+  manchester: {
+    id: "manchester",
+    label: "Manchester",
+    heading: "Manchester 每日活動",
+    subtitle: "即時載入最新活動資訊，規劃你的曼城精彩假期",
+    shareTitle: "Manchester每日活動推介",
+    sources: [
+      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester.json",
+      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester.json"
+    ]
+  },
+  london: {
+    id: "london",
+    label: "London",
+    heading: "London 每日活動",
+    subtitle: "掌握倫敦每日靈感，安排你的城市探索行程",
+    shareTitle: "London每日活動推介",
+    sources: [
+      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/london.json",
+      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/london.json"
+    ]
+  }
 };
 
-const DATA_URLS = buildDataUrls();
+const DEFAULT_REGION = "manchester";
+let currentRegion = DEFAULT_REGION;
+
 const eventsGrid = document.getElementById("eventsGrid");
-const statusBox = document.getElementById("status");
+const pageTitle = document.getElementById("pageTitle");
+const pageSubtitle = document.getElementById("pageSubtitle");
+const regionSelect = document.getElementById("regionSelect");
+
+const getRegionConfig = (regionId = DEFAULT_REGION) => REGION_CONFIG[regionId] ?? REGION_CONFIG[DEFAULT_REGION];
+
+const buildDataUrls = (regionId = DEFAULT_REGION) => {
+  const config = getRegionConfig(regionId);
+  const today = new Date().toISOString().split("T")[0];
+  return config.sources.map((url) => `${url}${url.includes("?") ? "&" : "?"}v=${today}`);
+};
+
+const updatePageIntro = (config) => {
+  if (pageTitle) pageTitle.textContent = config.heading;
+  if (pageSubtitle) pageSubtitle.textContent = config.subtitle;
+  document.title = `${config.label} Daily Events`;
+};
+
+const ensureStatusBox = () => {
+  let status = document.getElementById("status");
+  if (!status) {
+    status = document.createElement("div");
+    status.id = "status";
+    status.className = "status";
+    eventsGrid?.appendChild(status);
+  } else {
+    status.className = "status";
+  }
+  return status;
+};
+
+const showStatus = (message, variant) => {
+  const status = ensureStatusBox();
+  status.textContent = message;
+  if (variant) {
+    status.classList.add(variant);
+  }
+  return status;
+};
+
+const clearStatus = () => {
+  const status = document.getElementById("status");
+  status?.remove();
+};
 
 const getDisplayValue = (value) => {
   if (value == null) return "";
@@ -49,7 +109,7 @@ const createLocationRow = (location) => {
   return `<div><strong>地點：</strong><a class="location-link" href="${mapUrl}" target="_blank" rel="noopener noreferrer">${displayLocation}</a></div>`;
 };
 
-const buildCopyText = (event) => {
+const buildCopyText = (event, regionConfig) => {
   const title = event.event_name?.trim() || "未命名活動";
   const timeText = getDisplayValue(event.event_time);
   const locationText = getDisplayValue(event.event_location);
@@ -58,7 +118,7 @@ const buildCopyText = (event) => {
   const links = parseLinks(event.event_link);
 
   const sections = [
-    ["Manchester每日活動推介", "https://uk-daily-event.vercel.app", ""],
+    [regionConfig?.shareTitle ?? "UK Daily Event 推介", "https://uk-daily-event.vercel.app", ""],
     [title]
   ];
 
@@ -93,8 +153,8 @@ const copyToClipboard = async (text) => {
   document.body.removeChild(textarea);
 };
 
-const handleCopy = async (event, button, tooltip, wrapper) => {
-  const text = buildCopyText(event);
+const handleCopy = async (event, regionConfig, button, tooltip, wrapper) => {
+  const text = buildCopyText(event, regionConfig);
   const defaultLabel = button.dataset.defaultLabel || "複製活動內容";
   const defaultTooltip = tooltip.dataset.defaultText || "點擊複製";
   const setState = (stateClass, label) => {
@@ -163,7 +223,7 @@ const createLinksSection = (linkString) => {
   return container;
 };
 
-const createCard = (event) => {
+const createCard = (event, regionConfig) => {
   const card = document.createElement("article");
   card.className = "event-card";
   const descriptionText = getDisplayValue(event.event_description);
@@ -198,7 +258,7 @@ const createCard = (event) => {
   tooltip.dataset.defaultText = tooltipText;
   tooltip.textContent = tooltipText;
 
-  copyButton.addEventListener("click", () => handleCopy(event, copyButton, tooltip, copyWrapper));
+  copyButton.addEventListener("click", () => handleCopy(event, regionConfig, copyButton, tooltip, copyWrapper));
 
   copyWrapper.appendChild(copyButton);
   copyWrapper.appendChild(tooltip);
@@ -230,9 +290,10 @@ const createCard = (event) => {
   return card;
 };
 
-async function fetchWithFallback() {
+async function fetchWithFallback(regionId) {
+  const urls = buildDataUrls(regionId);
   let lastError;
-  for (const url of DATA_URLS) {
+  for (const url of urls) {
     try {
       const response = await fetch(url, { headers: { Accept: "application/json" }, cache: "no-cache" });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -245,23 +306,37 @@ async function fetchWithFallback() {
   throw lastError ?? new Error("未知錯誤");
 }
 
-async function loadEvents() {
+async function loadEvents(regionId = currentRegion) {
+  const config = getRegionConfig(regionId);
+  currentRegion = config.id;
+  if (regionSelect && regionSelect.value !== config.id) {
+    regionSelect.value = config.id;
+  }
+  updatePageIntro(config);
+  eventsGrid.innerHTML = "";
+  showStatus("載入中...");
   try {
-    const events = await fetchWithFallback();
+    const events = await fetchWithFallback(config.id);
 
     if (!Array.isArray(events) || events.length === 0) {
-      statusBox.textContent = "目前沒有活動資料。";
+      showStatus("目前沒有活動資料。");
       return;
     }
 
-    eventsGrid.innerHTML = "";
-    events.forEach((event) => eventsGrid.appendChild(createCard(event)));
+    clearStatus();
+    events.forEach((event) => eventsGrid.appendChild(createCard(event, config)));
   } catch (error) {
     console.error("Failed to load events", error);
-    eventsGrid.innerHTML = `<div class="status error">無法載入活動：${error.message}</div>`;
-  } finally {
-    statusBox?.remove();
+    eventsGrid.innerHTML = "";
+    showStatus(`無法載入活動：${error.message}`, "error");
   }
 }
 
-document.addEventListener("DOMContentLoaded", loadEvents);
+document.addEventListener("DOMContentLoaded", () => {
+  const initialRegion = regionSelect?.value || DEFAULT_REGION;
+  loadEvents(initialRegion);
+  regionSelect?.addEventListener("change", (event) => {
+    const selectedRegion = event.target.value;
+    loadEvents(selectedRegion);
+  });
+});

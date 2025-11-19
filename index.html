@@ -9,8 +9,15 @@
 </head>
 <body>
   <header>
-    <h1>Manchester 每日活動</h1>
-    <p>即時載入最新活動資訊，規劃你的曼城精彩假期</p>
+    <h1 id="pageTitle">Manchester 每日活動</h1>
+    <p id="pageSubtitle">即時載入最新活動資訊，規劃你的曼城精彩假期</p>
+    <div class="region-selector">
+      <label for="regionSelect">選擇地區</label>
+      <select id="regionSelect" aria-label="選擇地區">
+        <option value="manchester" selected>Manchester</option>
+        <option value="london">London</option>
+      </select>
+    </div>
   </header>
 
   <main>
