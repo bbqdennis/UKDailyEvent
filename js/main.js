@@ -1,15 +1,4 @@
 const REGION_CONFIG = {
-  manchester: {
-    id: "manchester",
-    label: "Manchester",
-    heading: "Manchester 每日活動",
-    subtitle: "即時載入最新活動資訊，規劃你的曼城精彩假期",
-    shareTitle: "Manchester每日活動推介",
-    sources: [
-      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester.json",
-      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester.json"
-    ]
-  },
   london: {
     id: "london",
     label: "London",
@@ -19,6 +8,17 @@ const REGION_CONFIG = {
     sources: [
       "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/london.json",
       "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/london.json"
+    ]
+  },
+  manchester: {
+    id: "manchester",
+    label: "Manchester",
+    heading: "Manchester 每日活動",
+    subtitle: "即時載入最新活動資訊，規劃你的曼城精彩假期",
+    shareTitle: "Manchester每日活動推介",
+    sources: [
+      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester.json",
+      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester.json"
     ]
   },
   marlborough: {

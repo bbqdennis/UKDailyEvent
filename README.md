@@ -24,9 +24,14 @@ https://n8n-media-storage.s3.eu-west-2.amazonaws.com/nottingham.json
 
 ## 功能簡介
 
-- `index.html` 會串接遠端 JSON，將活動資訊以卡片方式顯示並處理載入或錯誤狀態訊息。
-- `css/styles.css` 包含版面與配色設定，並定義活動卡片、可點擊地點、多行且自動換行的活動連結、聯絡我們區塊與帶提示的複製按鈕樣式。
-- `js/main.js` 擔負資料載入、轉換與 DOM 產生，會在資料來源後動態附加 `?v=YYYY-MM-DD` 以避免快取；同時使用 JSON 原始連結文字並讓地點欄位可跳轉到 Google Maps 搜尋，在連結、價錢、簡介等欄位為 N/A 時自動省略顯示，提供具提示訊息的複製卡片功能，非 http(s) 開頭的活動連結會直接帶你到 Google 搜尋，且若 API 回傳 `event_ticket_link`（非 `N/A`）也會在價錢區塊顯示「點擊購票」提示並開啟購票頁面，現在也能透過地區清單在 Manchester、London、Marlborough、Nottingham 之間切換並顯示對應的活動，複製分享連結會自動補上當前地區的網址 hash（如 `/#manchester`），並可依網址的 hash 或路徑自動預設載入對應地區。
+- `index.html` 串接遠端 JSON 並以卡片呈現活動，提供載入中/空資料/錯誤狀態訊息，內建地區選單與聯絡我們區塊。
+- `css/styles.css` 定義漸層背景、卡片、價格與購票提示、複製提示、地區選單、可換行的活動連結與聯絡我們按鈕等樣式。
+- `js/main.js` 依網址 hash 或 path 決定預設地區並同步地區選單與頁面標題（Manchester、London、Marlborough、Nottingham）。
+- `js/main.js` 對每個地區使用主備 JSON 來源，請求時附加 `?v=YYYY-MM-DD` 以避免快取，失敗時會顯示錯誤訊息。
+- `js/main.js` 活動卡片會自動隱藏 N/A 欄位，地點連到 Google Maps 搜尋，連結支援多筆且對非 http(s) 開頭自動改為 Google 搜尋。
+- `js/main.js` 價格區塊支援購票連結與 hover 提示，沒有購票連結時僅顯示價格徽章。
+- `js/main.js` 提供複製按鈕，會帶入地區分享標題、`/#<region>` 分享連結、活動基本資訊與所有連結，並以提示回饋成功/失敗。
+- `js/main.js` 監聽地區選單與 hash 變更，即時切換活動並保持網址 hash 與分享連結同步。
 - `favicon.ico` 採用品牌配色，提供瀏覽器分頁與捷徑的圖示。
 
 ## 本地開發小提醒
@@ -37,5 +42,5 @@ https://n8n-media-storage.s3.eu-west-2.amazonaws.com/nottingham.json
 ## 開發指引
 
  - 每次開發前，也應該先讀取 README.md 的內容
- - 每次開發後，也應該更新回 README.md 的內容
+ - 每次開發後，也應該更新回 README.md 的內容，功能寫入時應該用點列形式，一行一點
  - 每個獨立頁面，應該有其獨立的 html, js 和 css 檔，除非是共有 common 的部分
