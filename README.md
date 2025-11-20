@@ -30,6 +30,7 @@ https://n8n-media-storage.s3.eu-west-2.amazonaws.com/nottingham.json
 - `js/main.js` 對每個地區使用主備 JSON 來源，請求時附加 `?v=YYYY-MM-DD` 以避免快取，失敗時會顯示錯誤訊息。
 - `js/main.js` 活動卡片會自動隱藏 N/A 欄位，地點連到 Google Maps 搜尋，連結支援多筆且對非 http(s) 開頭自動改為 Google 搜尋。
 - `js/main.js` 價格區塊支援購票連結與 hover 提示，沒有購票連結時僅顯示價格徽章。
+- `js/main.js` 價錢為「免費」或購票連結未包含 http(s) 前綴時，僅顯示價格徽章不提供點擊。
 - `js/main.js` 提供複製按鈕，會帶入地區分享標題、`/#<region>` 分享連結、活動基本資訊與所有連結，並以提示回饋成功/失敗。
 - `js/main.js` 監聽地區選單與 hash 變更，即時切換活動並保持網址 hash 與分享連結同步。
 - `favicon.ico` 採用品牌配色，提供瀏覽器分頁與捷徑的圖示。
