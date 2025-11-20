@@ -56,19 +56,37 @@ const regionSelect = document.getElementById("regionSelect");
 
 const getRegionConfig = (regionId = DEFAULT_REGION) => REGION_CONFIG[regionId] ?? REGION_CONFIG[DEFAULT_REGION];
 
+const getRegionFromHash = () => {
+  if (typeof window === "undefined") return "";
+  const raw = window.location?.hash ?? "";
+  if (!raw) return "";
+  const cleaned = raw.replace(/^#\/?/, "").trim().toLowerCase();
+  return REGION_CONFIG[cleaned]?.id ?? "";
+};
+
 const getRegionFromPath = () => {
-  if (typeof window === "undefined") return DEFAULT_REGION;
+  if (typeof window === "undefined") return "";
   const path = window.location?.pathname ?? "";
   const segments = path.split("/").filter(Boolean);
-  const candidate = segments[segments.length - 1];
-  return REGION_CONFIG[candidate]?.id ?? DEFAULT_REGION;
+  const matched = segments.find((segment) => REGION_CONFIG[segment]);
+  return matched ?? "";
+};
+
+const getInitialRegion = () => getRegionFromHash() || getRegionFromPath() || DEFAULT_REGION;
+
+const updateHash = (regionId) => {
+  if (typeof window === "undefined") return;
+  const targetHash = `#${regionId}`;
+  if (window.location.hash !== targetHash) {
+    window.location.hash = targetHash;
+  }
 };
 
 const buildShareLink = (regionId = DEFAULT_REGION) => {
   const origin = typeof window !== "undefined" ? window.location?.origin : "";
   const base = origin && origin !== "file://" ? origin : SHARE_BASE_URL;
   const normalizedBase = base.replace(/\/+$/, "");
-  return `${normalizedBase}/${regionId || DEFAULT_REGION}`;
+  return `${normalizedBase}/#${regionId || DEFAULT_REGION}`;
 };
 
 const buildDataUrls = (regionId = DEFAULT_REGION) => {
@@ -372,13 +390,25 @@ async function loadEvents(regionId = currentRegion) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const initialRegion = getRegionFromPath();
+  const initialRegion = getInitialRegion();
   if (regionSelect && regionSelect.value !== initialRegion) {
     regionSelect.value = initialRegion;
   }
   loadEvents(initialRegion);
+
+  if (typeof window !== "undefined") {
+    window.addEventListener("hashchange", () => {
+      const targetRegion = getRegionFromHash() || DEFAULT_REGION;
+      loadEvents(targetRegion);
+    });
+  }
+
   regionSelect?.addEventListener("change", (event) => {
     const selectedRegion = event.target.value;
-    loadEvents(selectedRegion);
+    if (typeof window !== "undefined") {
+      updateHash(selectedRegion);
+    } else {
+      loadEvents(selectedRegion);
+    }
   });
 });
