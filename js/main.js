@@ -20,6 +20,28 @@ const REGION_CONFIG = {
       "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/london.json",
       "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/london.json"
     ]
+  },
+  marlborough: {
+    id: "marlborough",
+    label: "Marlborough",
+    heading: "Marlborough 每日活動",
+    subtitle: "暢遊Marlborough，探索每日靈感行程",
+    shareTitle: "Marlborough每日活動推介",
+    sources: [
+      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/marlborough.json",
+      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/marlborough.json"
+    ]
+  },
+  nottingham: {
+    id: "nottingham",
+    label: "Nottingham",
+    heading: "Nottingham 每日活動",
+    subtitle: "挖掘Nottingham的每日精彩活動",
+    shareTitle: "Nottingham每日活動推介",
+    sources: [
+      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/nottingham.json",
+      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/nottingham.json"
+    ]
   }
 };
 
