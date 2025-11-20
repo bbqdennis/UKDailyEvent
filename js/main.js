@@ -24,6 +24,7 @@ const REGION_CONFIG = {
 };
 
 const DEFAULT_REGION = "manchester";
+const SHARE_BASE_URL = "https://uk-daily-event.vercel.app";
 let currentRegion = DEFAULT_REGION;
 
 const eventsGrid = document.getElementById("eventsGrid");
@@ -32,6 +33,21 @@ const pageSubtitle = document.getElementById("pageSubtitle");
 const regionSelect = document.getElementById("regionSelect");
 
 const getRegionConfig = (regionId = DEFAULT_REGION) => REGION_CONFIG[regionId] ?? REGION_CONFIG[DEFAULT_REGION];
+
+const getRegionFromPath = () => {
+  if (typeof window === "undefined") return DEFAULT_REGION;
+  const path = window.location?.pathname ?? "";
+  const segments = path.split("/").filter(Boolean);
+  const candidate = segments[segments.length - 1];
+  return REGION_CONFIG[candidate]?.id ?? DEFAULT_REGION;
+};
+
+const buildShareLink = (regionId = DEFAULT_REGION) => {
+  const origin = typeof window !== "undefined" ? window.location?.origin : "";
+  const base = origin && origin !== "file://" ? origin : SHARE_BASE_URL;
+  const normalizedBase = base.replace(/\/+$/, "");
+  return `${normalizedBase}/${regionId || DEFAULT_REGION}`;
+};
 
 const buildDataUrls = (regionId = DEFAULT_REGION) => {
   const config = getRegionConfig(regionId);
@@ -116,9 +132,10 @@ const buildCopyText = (event, regionConfig) => {
   const descriptionText = getDisplayValue(event.event_description);
   const priceText = getDisplayValue(event.event_price);
   const links = parseLinks(event.event_link);
+  const shareLink = buildShareLink(regionConfig?.id);
 
   const sections = [
-    [regionConfig?.shareTitle ?? "UK Daily Event 推介", "https://uk-daily-event.vercel.app", ""],
+    [regionConfig?.shareTitle ?? "UK Daily Event 推介", shareLink, ""],
     [title]
   ];
 
@@ -333,7 +350,10 @@ async function loadEvents(regionId = currentRegion) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const initialRegion = regionSelect?.value || DEFAULT_REGION;
+  const initialRegion = getRegionFromPath();
+  if (regionSelect && regionSelect.value !== initialRegion) {
+    regionSelect.value = initialRegion;
+  }
   loadEvents(initialRegion);
   regionSelect?.addEventListener("change", (event) => {
     const selectedRegion = event.target.value;
