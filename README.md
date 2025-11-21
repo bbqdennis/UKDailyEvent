@@ -3,10 +3,17 @@ Find the UK Event for you on Daily and Daily
 
 Demo Website:
 https://uk-daily-event.vercel.app
-- Manchester: https://uk-daily-event.vercel.app/#manchester
 - London: https://uk-daily-event.vercel.app/#london
-- Marlborough: https://uk-daily-event.vercel.app/#marlborough
+- Manchester: https://uk-daily-event.vercel.app/#manchester
+- Birmingham: https://uk-daily-event.vercel.app/#birmingham
+- Leeds: https://uk-daily-event.vercel.app/#leeds
+- Liverpool: https://uk-daily-event.vercel.app/#liverpool
+- Edinburgh: https://uk-daily-event.vercel.app/#edinburgh
+- Glasgow: https://uk-daily-event.vercel.app/#glasgow
+- Bristol: https://uk-daily-event.vercel.app/#bristol
 - Nottingham: https://uk-daily-event.vercel.app/#nottingham
+- Sheffield: https://uk-daily-event.vercel.app/#sheffield
+- Marlborough: https://uk-daily-event.vercel.app/#marlborough
 
 Event Source List:
 
