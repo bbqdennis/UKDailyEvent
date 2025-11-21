@@ -1,51 +1,6 @@
-const REGION_CONFIG = {
-  london: {
-    id: "london",
-    label: "London",
-    heading: "London 每日活動",
-    subtitle: "掌握倫敦每日靈感，安排你的城市探索行程",
-    shareTitle: "London每日活動推介",
-    sources: [
-      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/london.json",
-      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/london.json"
-    ]
-  },
-  manchester: {
-    id: "manchester",
-    label: "Manchester",
-    heading: "Manchester 每日活動",
-    subtitle: "即時載入最新活動資訊，規劃你的曼城精彩假期",
-    shareTitle: "Manchester每日活動推介",
-    sources: [
-      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester.json",
-      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester.json"
-    ]
-  },
-  marlborough: {
-    id: "marlborough",
-    label: "Marlborough",
-    heading: "Marlborough 每日活動",
-    subtitle: "暢遊Marlborough，探索每日靈感行程",
-    shareTitle: "Marlborough每日活動推介",
-    sources: [
-      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/marlborough.json",
-      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/marlborough.json"
-    ]
-  },
-  nottingham: {
-    id: "nottingham",
-    label: "Nottingham",
-    heading: "Nottingham 每日活動",
-    subtitle: "挖掘Nottingham的每日精彩活動",
-    shareTitle: "Nottingham每日活動推介",
-    sources: [
-      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/nottingham.json",
-      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/nottingham.json"
-    ]
-  }
-};
-
-const DEFAULT_REGION = "manchester";
+const REGION_CONFIG_MAP = window.REGION_CONFIG ?? {};
+const REGION_ORDER_LIST = window.REGION_ORDER ?? Object.keys(REGION_CONFIG_MAP);
+const DEFAULT_REGION = REGION_CONFIG_MAP.manchester ? "manchester" : REGION_ORDER_LIST[0] || "manchester";
 const SHARE_BASE_URL = "https://uk-daily-event.vercel.app";
 let currentRegion = DEFAULT_REGION;
 
@@ -54,21 +9,40 @@ const pageTitle = document.getElementById("pageTitle");
 const pageSubtitle = document.getElementById("pageSubtitle");
 const regionSelect = document.getElementById("regionSelect");
 
-const getRegionConfig = (regionId = DEFAULT_REGION) => REGION_CONFIG[regionId] ?? REGION_CONFIG[DEFAULT_REGION];
+const populateRegionOptions = () => {
+  if (!regionSelect) return;
+  regionSelect.innerHTML = "";
+  const fragment = document.createDocumentFragment();
+  REGION_ORDER_LIST.forEach((regionId) => {
+    const config = REGION_CONFIG_MAP[regionId];
+    if (!config) return;
+    const option = document.createElement("option");
+    option.value = config.id;
+    option.textContent = config.label;
+    option.selected = config.id === DEFAULT_REGION;
+    fragment.appendChild(option);
+  });
+  regionSelect.appendChild(fragment);
+};
+
+const getRegionConfig = (regionId = DEFAULT_REGION) => {
+  const fallback = REGION_CONFIG_MAP[DEFAULT_REGION] ?? REGION_CONFIG_MAP[REGION_ORDER_LIST[0]];
+  return REGION_CONFIG_MAP[regionId] ?? fallback;
+};
 
 const getRegionFromHash = () => {
   if (typeof window === "undefined") return "";
   const raw = window.location?.hash ?? "";
   if (!raw) return "";
   const cleaned = raw.replace(/^#\/?/, "").trim().toLowerCase();
-  return REGION_CONFIG[cleaned]?.id ?? "";
+  return REGION_CONFIG_MAP[cleaned]?.id ?? "";
 };
 
 const getRegionFromPath = () => {
   if (typeof window === "undefined") return "";
   const path = window.location?.pathname ?? "";
   const segments = path.split("/").filter(Boolean);
-  const matched = segments.find((segment) => REGION_CONFIG[segment]);
+  const matched = segments.find((segment) => REGION_CONFIG_MAP[segment]);
   return matched ?? "";
 };
 
@@ -94,6 +68,20 @@ const buildDataUrls = (regionId = DEFAULT_REGION) => {
   const today = new Date().toISOString().split("T")[0];
   return config.sources.map((url) => `${url}${url.includes("?") ? "&" : "?"}v=${today}`);
 };
+
+const fetchWithTimeout = (url, ms = 10000) =>
+  new Promise((resolve, reject) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+      reject(new Error("請求逾時，請稍後再試"));
+    }, ms);
+
+    fetch(url, { headers: { Accept: "application/json" }, cache: "no-cache", signal: controller.signal })
+      .then(resolve)
+      .catch(reject)
+      .finally(() => clearTimeout(timeoutId));
+  });
 
 const updatePageIntro = (config) => {
   if (pageTitle) pageTitle.textContent = config.heading;
@@ -347,7 +335,7 @@ async function fetchWithFallback(regionId) {
   let lastError;
   for (const url of urls) {
     try {
-      const response = await fetch(url, { headers: { Accept: "application/json" }, cache: "no-cache" });
+      const response = await fetchWithTimeout(url);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const text = await response.text();
       return JSON.parse(text);
@@ -359,15 +347,20 @@ async function fetchWithFallback(regionId) {
 }
 
 async function loadEvents(regionId = currentRegion) {
-  const config = getRegionConfig(regionId);
-  currentRegion = config.id;
-  if (regionSelect && regionSelect.value !== config.id) {
-    regionSelect.value = config.id;
-  }
-  updatePageIntro(config);
-  eventsGrid.innerHTML = "";
-  showStatus("載入中...");
   try {
+    const config = getRegionConfig(regionId);
+    if (!config) {
+      showStatus("找不到地區設定", "error");
+      return;
+    }
+    currentRegion = config.id;
+    if (regionSelect && regionSelect.value !== config.id) {
+      regionSelect.value = config.id;
+    }
+    updatePageIntro(config);
+    eventsGrid.innerHTML = "";
+    showStatus("載入中...");
+
     const events = await fetchWithFallback(config.id);
 
     if (!Array.isArray(events) || events.length === 0) {
@@ -385,6 +378,11 @@ async function loadEvents(regionId = currentRegion) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  populateRegionOptions();
+  if (!REGION_ORDER_LIST.length) {
+    showStatus("尚未設定任何地區", "error");
+    return;
+  }
   const initialRegion = getInitialRegion();
   if (regionSelect && regionSelect.value !== initialRegion) {
     regionSelect.value = initialRegion;

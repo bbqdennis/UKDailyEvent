@@ -10,11 +10,29 @@ https://uk-daily-event.vercel.app
 
 Event Source List:
 
-Manchester:
-https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester.json
-
 London:
 https://n8n-media-storage.s3.eu-west-2.amazonaws.com/london.json
+
+Birmingham:
+https://n8n-media-storage.s3.eu-west-2.amazonaws.com/birmingham.json
+
+Bristol:
+https://n8n-media-storage.s3.eu-west-2.amazonaws.com/bristol.json
+
+Edinburgh:
+https://n8n-media-storage.s3.eu-west-2.amazonaws.com/edinburgh.json
+
+Glasgow:
+https://n8n-media-storage.s3.eu-west-2.amazonaws.com/glasgow.json
+
+Leeds:
+https://n8n-media-storage.s3.eu-west-2.amazonaws.com/leeds.json
+
+Liverpool:
+https://n8n-media-storage.s3.eu-west-2.amazonaws.com/liverpool.json
+
+Manchester:
+https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester.json
 
 Marlborough:
 https://n8n-media-storage.s3.eu-west-2.amazonaws.com/marlborough.json
@@ -22,12 +40,17 @@ https://n8n-media-storage.s3.eu-west-2.amazonaws.com/marlborough.json
 Nottingham:
 https://n8n-media-storage.s3.eu-west-2.amazonaws.com/nottingham.json
 
+Sheffield:
+https://n8n-media-storage.s3.eu-west-2.amazonaws.com/sheffield.json
+
 ## 功能簡介
 
 - `index.html` 串接遠端 JSON 並以卡片呈現活動，提供載入中/空資料/錯誤狀態訊息，內建地區選單與聯絡我們區塊。
 - `css/styles.css` 定義漸層背景、卡片、價格與購票提示、複製提示、地區選單、可換行的活動連結與聯絡我們按鈕等樣式。
-- `js/main.js` 依網址 hash 或 path 決定預設地區並同步地區選單與頁面標題（Manchester、London、Marlborough、Nottingham）。
-- `js/main.js` 對每個地區使用主備 JSON 來源，請求時附加 `?v=YYYY-MM-DD` 以避免快取，失敗時會顯示錯誤訊息。
+- `js/main.js` 依網址 hash 或 path 決定預設地區並同步地區選單與頁面標題。
+- `js/region-config.js` 集中管理 11 個地區設定與主備 JSON 來源（London、Manchester、Birmingham、Leeds、Liverpool、Edinburgh、Glasgow、Bristol、Nottingham、Sheffield、Marlborough）。
+- `js/main.js` 以設定檔動態建立地區下拉選單，新增 Birmingham、Leeds、Liverpool、Edinburgh、Glasgow、Bristol、Sheffield 選項。
+- `js/main.js` 對每個地區使用主備 JSON 來源，請求時附加 `?v=YYYY-MM-DD` 以避免快取，請求逾時 10 秒就會回報錯誤提示，避免長時間停留在「載入中...」。
 - `js/main.js` 活動卡片會自動隱藏 N/A 欄位，地點連到 Google Maps 搜尋，連結支援多筆且對非 http(s) 開頭自動改為 Google 搜尋。
 - `js/main.js` 價格區塊支援購票連結與 hover 提示，沒有購票連結時僅顯示價格徽章。
 - `js/main.js` 價錢為「免費」或購票連結未包含 http(s) 前綴時，僅顯示價格徽章不提供點擊。
