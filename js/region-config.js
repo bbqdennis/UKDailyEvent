@@ -20,8 +20,8 @@ const REGION_CONFIG = {
     subtitle: "掌握倫敦每日靈感，安排你的城市探索行程",
     shareTitle: "London每日活動推介",
     sources: [
-      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/london.json",
-      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/london.json"
+      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/london_zh.json",
+      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/london_zh.json"
     ]
   },
   manchester: {
@@ -31,8 +31,8 @@ const REGION_CONFIG = {
     subtitle: "即時載入最新活動資訊，規劃你的曼城精彩假期",
     shareTitle: "Manchester每日活動推介",
     sources: [
-      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester.json",
-      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester.json"
+      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester_zh.json",
+      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/manchester_zh.json"
     ]
   },
   birmingham: {
@@ -42,8 +42,8 @@ const REGION_CONFIG = {
     subtitle: "探索伯明翰每日靈感，感受城市活力",
     shareTitle: "Birmingham每日活動推介",
     sources: [
-      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/birmingham.json",
-      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/birmingham.json"
+      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/birmingham_zh.json",
+      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/birmingham_zh.json"
     ]
   },
   leeds: {
@@ -53,8 +53,8 @@ const REGION_CONFIG = {
     subtitle: "掌握Leeds最新活動，安排你的造訪行程",
     shareTitle: "Leeds每日活動推介",
     sources: [
-      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/leeds.json",
-      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/leeds.json"
+      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/leeds_zh.json",
+      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/leeds_zh.json"
     ]
   },
   liverpool: {
@@ -64,8 +64,8 @@ const REGION_CONFIG = {
     subtitle: "跟上Liverpool每日音樂與文化節奏",
     shareTitle: "Liverpool每日活動推介",
     sources: [
-      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/liverpool.json",
-      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/liverpool.json"
+      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/liverpool_zh.json",
+      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/liverpool_zh.json"
     ]
   },
   edinburgh: {
@@ -75,8 +75,8 @@ const REGION_CONFIG = {
     subtitle: "Edinburgh 每日靈感，漫遊古城與藝文活動",
     shareTitle: "Edinburgh每日活動推介",
     sources: [
-      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/edinburgh.json",
-      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/edinburgh.json"
+      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/edinburgh_zh.json",
+      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/edinburgh_zh.json"
     ]
   },
   glasgow: {
@@ -86,8 +86,8 @@ const REGION_CONFIG = {
     subtitle: "Glasgow 當日活動，體驗創意與音樂場景",
     shareTitle: "Glasgow每日活動推介",
     sources: [
-      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/glasgow.json",
-      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/glasgow.json"
+      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/glasgow_zh.json",
+      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/glasgow_zh.json"
     ]
   },
   bristol: {
@@ -97,8 +97,8 @@ const REGION_CONFIG = {
     subtitle: "Bristol 每日活動，感受港城藝術氣息",
     shareTitle: "Bristol每日活動推介",
     sources: [
-      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/bristol.json",
-      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/bristol.json"
+      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/bristol_zh.json",
+      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/bristol_zh.json"
     ]
   },
   nottingham: {
@@ -108,8 +108,8 @@ const REGION_CONFIG = {
     subtitle: "挖掘Nottingham的每日精彩活動",
     shareTitle: "Nottingham每日活動推介",
     sources: [
-      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/nottingham.json",
-      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/nottingham.json"
+      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/nottingham_zh.json",
+      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/nottingham_zh.json"
     ]
   },
   sheffield: {
@@ -119,8 +119,8 @@ const REGION_CONFIG = {
     subtitle: "Sheffield 每日活動，探索鋼城與綠地風貌",
     shareTitle: "Sheffield每日活動推介",
     sources: [
-      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/sheffield.json",
-      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/sheffield.json"
+      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/sheffield_zh.json",
+      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/sheffield_zh.json"
     ]
   },
   marlborough: {
@@ -130,8 +130,8 @@ const REGION_CONFIG = {
     subtitle: "暢遊Marlborough，探索每日靈感行程",
     shareTitle: "Marlborough每日活動推介",
     sources: [
-      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/marlborough.json",
-      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/marlborough.json"
+      "https://n8n-media-storage.s3.eu-west-2.amazonaws.com/marlborough_zh.json",
+      "https://r.jina.ai/https://n8n-media-storage.s3.eu-west-2.amazonaws.com/marlborough_zh.json"
     ]
   }
 };
